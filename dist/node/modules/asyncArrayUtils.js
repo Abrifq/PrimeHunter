@@ -1,5 +1,8 @@
 exports = {
     some: async function asyncSome(array, asyncFunction) {
+        if (array instanceof Set) {
+            array = [...array];
+        }
         let doesSomeResolveToTrue = false;
         for (let i = 0; i < array.length; i++) {
             doesSomeResolveToTrue = !!(await asyncFunction(array[i], i, array));
@@ -10,6 +13,9 @@ exports = {
         return doesSomeResolveToTrue;
     },
     every: async function asyncEvery(array, asyncFunction) {
+        if (array instanceof Set) {
+            array = [...array];
+        }
         let didAnyFail = false;
         for (let i = 0; i < array.length; i++) {
             didAnyFail = !(await asyncFunction(array[i], i, array));
@@ -30,6 +36,9 @@ exports = {
         return;
     },
     reduce: async function asyncReduce(array, asyncFunction, initialValue) {
+        if (array instanceof Set) {
+            array = [...array];
+        }
         for (let i = 0; i < array.length; i++) {
             if (typeof initialValue === "undefined") {
                 initialValue = array[i];
@@ -40,11 +49,15 @@ exports = {
         return initialValue;
     },
     reduceRight: async function asyncReduceRight(array, asyncFunction, initialValue) {
+        if (array instanceof Set) {
+            array = [...array];
+        }
         for (let i = array.length - 1; i !== -1; i--) {
             if (typeof initialValue === "undefined") {
                 initialValue = array[i];
                 continue;
             }
+
             initialValue = await asyncFunction(initialValue, array[i], i, array);
         }
     }
