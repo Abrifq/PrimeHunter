@@ -1,4 +1,28 @@
+    /**@callback asyncArrayLoopedBoolChecker
+     * @param {*} item
+     * @param {number} index
+     * @param {*[]} array
+     * @returns {Promise<boolean>}
+     */
+    /**@callback asyncArrayReducer
+     * @param {*} initialValue
+     * @param {*} item
+     * @param {number} index
+     * @param {*[]} array
+     * @returns {Promise<*>}
+     */
+    /**@callback asyncArrayVoidLoop
+     * @param {*} item
+     * @param {number} index
+     * @param {*[]} array
+     * @returns {Promise<void>}
+     */
 exports = {
+    /**
+     * @returns {Promise<boolean>}
+     * @param {Array|Set} array 
+     * @param {asyncArrayLoopedBoolChecker} asyncFunction - Passed arguments are same as in the Array.prototype.some
+     */
     some: async function asyncSome(array, asyncFunction) {
         if (array instanceof Set) {
             array = [...array];
@@ -12,6 +36,11 @@ exports = {
         }
         return doesSomeResolveToTrue;
     },
+    /**
+     * @returns {Promise<boolean>}
+     * @param {Array|Set} array 
+     * @param {asyncArrayLoopedBoolChecker} asyncFunction - Passed arguments are same as in the Array.prototype.every
+     */
     every: async function asyncEvery(array, asyncFunction) {
         if (array instanceof Set) {
             array = [...array];
@@ -25,6 +54,11 @@ exports = {
         }
         return !didAnyFail;
     },
+    /**
+     * @returns {Promise<void>}
+     * @param {Array|Set} array 
+     * @param {VoidFunction} asyncFunction - Passed arguments are same as in Array.prototype.forEach
+     */
     forEach: async function asyncForEach(array, asyncFunction) {
         const copiedArray = [...array];
         let promiseChain = Promise.resolve();
@@ -35,6 +69,12 @@ exports = {
         }
         return;
     },
+    /**
+     * @returns {*}
+     * @param {Array|Set} array 
+     * @param {asyncArrayReducer} asyncFunction 
+     * @param {*=} initialValue 
+     */
     reduce: async function asyncReduce(array, asyncFunction, initialValue) {
         if (array instanceof Set) {
             array = [...array];
@@ -48,6 +88,12 @@ exports = {
         }
         return initialValue;
     },
+    /**
+     * @returns {*}
+     * @param {Array|Set} array 
+     * @param {asyncArrayReducer} asyncFunction 
+     * @param {*=} initialValue 
+     */
     reduceRight: async function asyncReduceRight(array, asyncFunction, initialValue) {
         if (array instanceof Set) {
             array = [...array];
