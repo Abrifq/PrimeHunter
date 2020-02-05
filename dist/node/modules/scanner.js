@@ -1,7 +1,9 @@
-const PrimeScannerGenerator =
     /**@generator
      * @returns {Generator}
      */
+
+const PrimeScannerGenerator =
+
     async function* () {
         let index = 2,
             task = {
@@ -10,13 +12,22 @@ const PrimeScannerGenerator =
                 controlledPromise: new(require("./controlledPromise"))()
             };
         const primes = [],
-            asyncEvery = require("./asyncArrayUtils").every,
-            primeFinder = async (num) => index % num !== 0, finishTask = (resolveValue, controlledPromise) => {
-                controlledPromise.resolve(true);
-                this.outputs.primes = [...primes];
-                this.outputs.scannedTo = index;
-                return controlledPromise.promise;
-            }, checkTask = task => {
+            asyncEvery = require("./asyncArrayUtils").every;
+        const primeFinder = async (num) => index % num !== 0, finishTask = (resolveValue, controlledPromise) => {
+            controlledPromise.resolve(true);
+            this.outputs.primes = [...primes];
+            this.outputs.scannedTo = index;
+            return controlledPromise.promise;
+
+        };
+        /**@param {Set} set
+         * @param {*[]} ...array
+         * @returns {Promise<void>} */
+        const bulkInputToSet = (set, ...array) => {
+
+            return require("./asyncArrayUtils").forEach(array.flat(), set.add);
+        };
+        const checkTask = async task => {
                 const defaultTask = {
                     directive: "scanNNumbers",
                     amount: 1,
@@ -26,13 +37,26 @@ const PrimeScannerGenerator =
                     return defaultTask;
                 }
                 //I'll laugh if this gets optimized by any way in V8
-                const isValidTask =
-                    "directive" in task && typeof task.directive === "string" &&
-                    "amount" in task && typeof task.amount === "number" &&
+                const doesHaveControlledPromise =
                     "controlledPromise" in task && typeof task.controlledPromise === "object" &&
                     "resolve" in task.controlledPromise && typeof task.controlledPromise.resolve === "function" &&
                     "reject" in task.controlledPromise && typeof task.controlledPromise.reject === "function" &&
                     "promise" in task.controlledPromise && typeof task.controlledPromise.promise === "object";
+
+                const isBackupTask =
+                    "primeList" in task && typeof task.primeList === "object" &&
+                    "scannedTo" in task && typeof task.scannedTo === "number" &&
+                    doesHaveControlledPromise;
+                if (isBackupTask) {
+                    index = task.scannedTo;
+                    bulkInputToSet(primes, task.primeList);
+
+                }
+
+                const isValidTask =
+                    "directive" in task && typeof task.directive === "string" &&
+                    "amount" in task && typeof task.amount === "number" &&
+                    doesHaveControlledPromise;
                 if (isValidTask) {
                     return task;
                 }
@@ -67,4 +91,5 @@ const PrimeHunter = {
         scannedTo: 0
     }
 };
-exports = PrimeHunter;
+
+module.exports = PrimeHunter;

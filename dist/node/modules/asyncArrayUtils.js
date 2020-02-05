@@ -17,7 +17,7 @@
      * @param {*[]} array
      * @returns {Promise<void>}
      */
-exports = {
+module.exports = {
     /**
      * @returns {Promise<boolean>}
      * @param {Array|Set} array 

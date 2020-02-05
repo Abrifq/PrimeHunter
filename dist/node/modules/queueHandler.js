@@ -30,9 +30,9 @@ function QueueConstructor(){
     };
 }
 
-/**@typedef {Object} PrimeHunter-Task
+/**@typedef PrimeHunter-Task
  * @property {string} taskDescriptor
  * @property {number} amount
  * @prop {ControlledPromise} control
  */
-exports = new QueueConstructor();
+module.exports = new QueueConstructor();
