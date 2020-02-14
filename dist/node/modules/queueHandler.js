@@ -1,31 +1,42 @@
-/**@typedef {Object} Queue
- * @property {Function<Promise>} addTask
- * @property {Function<number>} getLength
- */
+
 /**@constructor
- * @constructs Queue
  */
-function QueueConstructor(){
+function QueueConstructor() {
     const privateQueue = [];
     let isLoopUnlocked = true;
-    async function tickQueue(){
+    async function tickQueue() {
         isLoopUnlocked = false;
-        while(privateQueue.length) {
+        while (privateQueue.length) {
             await /* replace with: PrimeHunter(task), placeholder:*/Promise.resolve();
             privateQueue.shift();
         }
         isLoopUnlocked = true;
         return;
     }
-    this.getLength = ()=>privateQueue.length;
-    this.addTask = taskTemplate=>{
+    /**@name getLength
+     * @kind function
+     * @returns {number}
+     */
+    this.getLength = 
+     () => {
+         return privateQueue.length;
+     };
+      
+     /**@name addTask
+      * @kind function
+     * @param {Object} taskTemplate
+     * @param {string} taskTemplate.directive 
+     * @param {number} taskTemplate.amount
+     */
+    this.addTask =
+     ({directive,amount}) => {
         let task = {
-            descriptor:taskTemplate.descriptor,
-            amount: taskTemplate.amount,
+            directive,
+            amount,
             controlledPromise: new (require("./controlledPromise"))()
         };
         privateQueue.push(task);
-        if (isLoopUnlocked) {tickQueue();}
+        if (isLoopUnlocked) { tickQueue(); }
         return task.controlledPromise.promise;
     };
 }

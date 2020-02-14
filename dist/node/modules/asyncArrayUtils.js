@@ -1,20 +1,20 @@
     /**@callback asyncArrayLoopedBoolChecker
      * @param {*} item
      * @param {number} index
-     * @param {*[]} array
+     * @param {Array} array
      * @returns {Promise<boolean>}
      */
     /**@callback asyncArrayReducer
      * @param {*} initialValue
      * @param {*} item
      * @param {number} index
-     * @param {*[]} array
+     * @param {Array} array
      * @returns {Promise<*>}
      */
     /**@callback asyncArrayVoidLoop
      * @param {*} item
      * @param {number} index
-     * @param {*[]} array
+     * @param {Array} array
      * @returns {Promise<void>}
      */
 module.exports = {
