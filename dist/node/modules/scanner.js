@@ -1,95 +1,115 @@
-    /**@generator
-     * @returns {Generator}
-     */
+const controlledPromiseConstructor = require("./controlledPromise");
+/**@generator
+ * @returns {Generator}
+ */
 
-const PrimeScannerGenerator =
+const PrimeScannerGenerator = async function* () {
+    let index = 2, task = {
+        directive: "scanNumbers",
+        amount: 1,
+        controlledPromise: new controlledPromiseConstructor()
+    },primeScanningStart,scanResultArray;
 
-    async function* () {
-        let index = 2,
-            task = {
-                directive: "scanNNumbers",
-                amount: 1,
-                controlledPromise: new(require("./controlledPromise"))()
-            };
-        const primes = [],
-            asyncEvery = require("./asyncArrayUtils").every;
-        const primeFinder = async (num) => index % num !== 0, finishTask = (resolveValue, controlledPromise) => {
-            controlledPromise.resolve(true);
+    const primes = [],
+        asyncEvery = require("./asyncArrayUtils").every;
+    const primeFinder = num => index % num !== 0,
+        finishTask = (resolveValue, controlledPromise) => {
+            controlledPromise.resolve(resolveValue);
             this.outputs.primes = [...primes];
             this.outputs.scannedTo = index;
             return controlledPromise.promise;
 
         };
-        /**@param {Set} set
-         * @param {*[]} ...array
-         * @returns {Promise<void>} */
-        const bulkInputToSet = (set, ...array) => {
 
-            return require("./asyncArrayUtils").forEach(array.flat(), set.add);
-        };
-        const checkTask = async task => {
-                const defaultTask = {
-                    directive: "scanNNumbers",
-                    amount: 1,
-                    controlledPromise: new(require("./controlledPromise"))()
-                };
-                if (typeof task !== "object") {
-                    return defaultTask;
-                }
-                //I'll laugh if this gets optimized by any way in V8
-                const doesHaveControlledPromise =
-                    "controlledPromise" in task && typeof task.controlledPromise === "object" &&
-                    "resolve" in task.controlledPromise && typeof task.controlledPromise.resolve === "function" &&
-                    "reject" in task.controlledPromise && typeof task.controlledPromise.reject === "function" &&
-                    "promise" in task.controlledPromise && typeof task.controlledPromise.promise === "object";
-
-                const isBackupTask =
-                    "primeList" in task && typeof task.primeList === "object" &&
-                    "scannedTo" in task && typeof task.scannedTo === "number" &&
-                    doesHaveControlledPromise;
-                if (isBackupTask) {
-                    index = task.scannedTo;
-                    bulkInputToSet(primes, task.primeList);
-
-                }
-
-                const isValidTask =
-                    "directive" in task && typeof task.directive === "string" &&
-                    "amount" in task && typeof task.amount === "number" &&
-                    doesHaveControlledPromise;
-                if (isValidTask) {
-                    return task;
-                }
-                return defaultTask;
-            };
-        while (true) {
-            if (await asyncEvery(primes, primeFinder)) {
-                primes.push(index);
-                if (task.directive === "findNPrimes") {
-                    task.amount--;
-                } else if (task.directive === "findPrimeN" && primes.length >= task.amount) {
-                    task = checkTask(yield finishTask(primes[task.amount], task.controlledPromise));
-                }
-            }
-            if (task.directive === "scanNNumbers") {
-                task.amount--;
-            }
-
-            if (task.amount === 0) {
-                task = checkTask(yield finishTask(true, task.controlledPromise));
-            } else if (task.directive === "scanToNumberN" && task.amount <= index) {
-                task = checkTask(yield finishTask(true, task.controlledPromise));
-            }
-            index++;
+    /**@param {Array} setLike
+     * @param {Array} ...array
+     * @returns {Promise<void>} */
+    const bulkInputToSet = async (setLike, ...array) => {
+        array= array.flat();
+        for (let i = 0; i < array.length; i++) {
+            if (setLike.has(array[i])) { continue }
+            setLike.push(array[i]);
         }
     };
 
+    const checkTask = async task => {
+        const defaultTask = {
+            directive: "scanNumbers",
+            amount: 1,
+            controlledPromise: new controlledPromiseConstructor()
+        };
+        if (typeof task !== "object") {
+            console.warn("Invalid task: not object");
+            return defaultTask;
+        }
+
+        //I'll laugh if this gets optimized by any way in V8
+        const doesHaveControlledPromise =
+            "controlledPromise" in task && typeof task.controlledPromise === "object" &&
+            "resolve" in task.controlledPromise && typeof task.controlledPromise.resolve === "function" &&
+            "reject" in task.controlledPromise && typeof task.controlledPromise.reject === "function" &&
+            "promise" in task.controlledPromise && typeof task.controlledPromise.promise === "object";
+        console.assert(doesHaveControlledPromise, "Invalid task: Invalid ControlledPromise");
+        const isBackupTask = doesHaveControlledPromise &&
+            "primeList" in task && typeof task.primeList === "object" &&
+            "scannedTo" in task && typeof task.scannedTo === "number";
+        if (isBackupTask) {
+            index = task.scannedTo;
+            bulkInputToSet(primes, task.primeList);
+        }
+
+        const isValidTask = doesHaveControlledPromise &&
+            "directive" in task && typeof task.directive === "string" &&
+            "amount" in task && typeof task.amount === "number";
+        if (isValidTask) {
+            console.info("Valid task!");
+            if (task.directive === "findPrimes"){ primeScanningStart = primes.length;scanResultArray=[];}
+            return task;
+        }
+
+        console.warn("Invalid task");
+        return defaultTask;
+    };
+
+
+    while (true) {
+        if (task.directive === "backup") {
+            task = await checkTask(yield finishTask(true, task.promise));
+        }
+        if (await asyncEvery(primes, primeFinder)) {
+            primes.push(index);
+            if (task.directive === "findPrimes") {
+                task.amount--;
+                scanResultArray.push(index);
+            }
+
+        }
+        if (task.directive === "scanNumbers") {
+            task.amount--;
+        }
+
+        if (task.amount === 0) {
+            let returnValue = task.directive === "findPrimes"?[...scanResultArray]:true;
+            task = await checkTask(yield finishTask(returnValue, task.controlledPromise));
+        } else if (task.directive === "scanToNumber" && task.amount <= index) {
+            task = await checkTask(yield finishTask(true, task.controlledPromise));
+        } else if (task.directive === "findPrime" && primes.length >= task.amount) {
+            task = await checkTask(yield finishTask(primes[task.amount], task.controlledPromise));
+        }
+
+        ++index;
+
+    }
+};
+
+
 const PrimeHunter = {
-    scanner: PrimeScannerGenerator(),
     outputs: {
         primes: [],
         scannedTo: 0
     }
 };
-
-module.exports = PrimeHunter;
+const generator = PrimeScannerGenerator.apply(PrimeHunter);
+PrimeHunter.scanTask = task => generator.next(task);
+exports.default = null;
+exports = module.exports = PrimeHunter.scanTask().then(() => PrimeHunter); //first scan
