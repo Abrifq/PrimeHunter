@@ -11,6 +11,7 @@ function scanToTargetNumber(target) {
 }
 
 /**
+ * @description Scans until finding the `n`th prime number, then returning it.
  * @returns {Promise.<number>} - The `n`th prime number from start
  * @param {number} n -  Specifies the `n` in "`n`th prime number from the start"
  */
@@ -32,7 +33,7 @@ function findPrimes(amount) {
 
 /**
  * @returns {Promise.<number>}
- * @param {number} amount 
+ * @param {number} amount - Specifies how many numbers should be scanned.
  */
 function scanNumbers(amount) {
     return queueReference.addTask({

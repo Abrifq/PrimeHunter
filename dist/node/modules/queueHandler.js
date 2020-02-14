@@ -17,28 +17,25 @@ function QueueConstructor() {
      * @kind function
      * @returns {number}
      */
-    this.getLength = 
-     () => {
-         return privateQueue.length;
-     };
-      
-     /**@name addTask
-      * @kind function
-     * @param {Object} taskTemplate
-     * @param {string} taskTemplate.directive 
-     * @param {number} taskTemplate.amount
-     */
+    this.getLength = () => privateQueue.length;
+
+    /**@name addTask
+     * @kind function
+    * @param {Object} taskTemplate
+    * @param {string} taskTemplate.directive 
+    * @param {number} taskTemplate.amount
+    */
     this.addTask =
-     ({directive,amount}) => {
-        let task = {
-            directive,
-            amount,
-            controlledPromise: new (require("./controlledPromise"))()
+        ({ directive, amount }) => {
+            let task = {
+                directive,
+                amount,
+                controlledPromise: new (require("./controlledPromise"))()
+            };
+            privateQueue.push(task);
+            if (isLoopUnlocked) { tickQueue(); }
+            return task.controlledPromise.promise;
         };
-        privateQueue.push(task);
-        if (isLoopUnlocked) { tickQueue(); }
-        return task.controlledPromise.promise;
-    };
 }
 
 /**@typedef PrimeHunter-Task
