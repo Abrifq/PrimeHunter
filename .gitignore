@@ -2,7 +2,7 @@
 .vscode/
 
 #Ignore the jsdocs for wiki
-.dist\node\docs
+dist\node\docs
 
 #Obvious reasons.
-.dist\node\node_modules\
+dist\node\node_modules
