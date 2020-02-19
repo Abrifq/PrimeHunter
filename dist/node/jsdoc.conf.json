@@ -3,7 +3,7 @@
     "opts": {
         "destination": "./docs/",
         "encoding": "utf8",
-        "template":"./node_modules/minami"
+        "template":"./node_modules/ink-docstrap/template/"
     },
     
     "plugins": ["plugins/markdown"],
@@ -32,7 +32,22 @@
     "templates": {
        
         "cleverLinks": true,
-       
-        "monospaceLinks": true
+        "monospaceLinks": true,
+        "theme":"flatly",
+        "systemName":"PrimeHunter",
+        "footer":"Powered by ink-docStrap, jsdoc and love for programming!",
+        "includeDate":true,
+        "linenums":true,
+        "navType":"vertical",
+        "collapseSymbols":true,
+        "inverseNav":true,
+        "outputSourceFiles":true,
+        "outputSourcePath":true,
+        "syntaxTheme":"dark",
+        "search":true,
+        "sort":"longname",
+        "wrap":true,
+        "dateFormat":"D MMM YYYY"
+
     }
 }
