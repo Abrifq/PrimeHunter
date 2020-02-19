@@ -21,15 +21,15 @@ const { every: asyncEvery } = require("./asyncArrayUtils");
  */
 
 const PrimeScannerGenerator = async function* () {
+
     let index = 2, task = {
         directive: "scanNumbers",
         amount: 1,
         controlledPromise: new controlledPromiseConstructor()
-    },primeScanningStart,scanResultArray;
+    }, primeScanningStart, scanResultArray;
 
     const primes = [],
-        asyncEvery = require("./asyncArrayUtils").every;
-    const primeFinder = num => index % num !== 0,
+        primeFinder = num => index % num !== 0,
         finishTask = (resolveValue, controlledPromise) => {
             controlledPromise.resolve(resolveValue);
             this.outputs.primes = [...primes];
@@ -42,7 +42,7 @@ const PrimeScannerGenerator = async function* () {
      * @param {Array} ...array
      * @returns {Promise<void>} */
     const bulkInputToSet = async (setLike, ...array) => {
-        array= array.flat();
+        array = array.flat();
         for (let i = 0; i < array.length; i++) {
             if (setLike.has(array[i])) { continue }
             setLike.push(array[i]);
@@ -80,7 +80,9 @@ const PrimeScannerGenerator = async function* () {
             "amount" in task && typeof task.amount === "number";
         if (isValidTask) {
             console.info("Valid task!");
-            if (task.directive === "findPrimes"){ primeScanningStart = primes.length;scanResultArray=[];}
+            if (task.directive === "findPrimes") {
+                primeScanningStart = primes.length; scanResultArray = [];
+            }
             return task;
         }
 
@@ -96,17 +98,17 @@ const PrimeScannerGenerator = async function* () {
         if (await asyncEvery(primes, primeFinder)) {
             primes.push(index);
             if (task.directive === "findPrimes") {
-                task.amount--;
+                --task.amount;
                 scanResultArray.push(index);
             }
 
         }
         if (task.directive === "scanNumbers") {
-            task.amount--;
+            --task.amount;
         }
 
         if (task.amount === 0) {
-            let returnValue = task.directive === "findPrimes"?[...scanResultArray]:true;
+            let returnValue = task.directive === "findPrimes" ? [...scanResultArray] : true;
             task = await checkTask(yield finishTask(returnValue, task.controlledPromise));
         } else if (task.directive === "scanToNumber" && task.amount <= index) {
             task = await checkTask(yield finishTask(true, task.controlledPromise));
@@ -127,7 +129,6 @@ const PrimeScannerGenerator = async function* () {
  * @prop {function} scanTask
  */
 
-const PrimeHunter = {
  /**@type {PrimeHunter} */
 const PrimeHunterController = {
     outputs: {
@@ -135,15 +136,17 @@ const PrimeHunterController = {
         scannedTo: 0
     }
 };
-const generator = PrimeScannerGenerator.apply(PrimeHunter);
-PrimeHunter.scanTask = task => generator.next(task);
-exports.default = null;
-exports = module.exports = PrimeHunter.scanTask().then(() => PrimeHunter); //first scan
+
+const generator = PrimeScannerGenerator.apply(PrimeHunterController);
 /**@alias PrimeHunter.scanTask
  * @kind function
  * @async
  * @param {Task} task
  * @returns {Promise<number[]|number|boolean>}
  */
+PrimeHunterController.scanTask = (task) => {
+    return generator.next(task);
+};
 
 /**@type {Promise<PrimeHunter>} */
+exports = module.exports = PrimeHunterController.scanTask().then(() => PrimeHunterController); //first scan
