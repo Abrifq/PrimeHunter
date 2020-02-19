@@ -84,6 +84,13 @@ module.exports = {
                 initialValue = array[i];
                 continue;
             }
+        let i = 0;
+        if (typeof initialValue === "undefined") {
+            initialValue = array[i];
+            i++;
+        }
+        for (; i < array.length; i++) {
+
             initialValue = await asyncFunction(initialValue, array[i], i, array);
         }
         return initialValue;
@@ -103,8 +110,30 @@ module.exports = {
                 initialValue = array[i];
                 continue;
             }
+        let i = array.length - 1;
+        if (typeof initialValue === "undefined") {
+            initialValue = array[i];
+            i--;
+        }
+        for (; i !== -1; i--) {
+
 
             initialValue = await asyncFunction(initialValue, array[i], i, array);
         }
+    mapConstructor: function asyncArrayMapConstructor(array){
+        /**
+         * @typedef {Object} asyncMapChained
+         * @property {Array} array - The result after the last `map()`
+         * @property {function asyncArrayMap(asyncFunction)=>Promise<asyncMapChained>} map
+         */
+        const self = {
+            array,
+            map: async function(asyncFunction){
+                for ( let i = 0;i<array.length;i++ ){
+                    await asyncFunction(array[i],i,array);
+                }
+            }
+        };
+        return self;
     }
 };
