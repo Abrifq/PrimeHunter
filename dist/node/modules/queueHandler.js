@@ -1,4 +1,4 @@
-
+const scannerReference = require("./scanner");
 /**@module QueueHandler
  * @requires {@link module:PrimeNumberScanner}
  */
@@ -12,9 +12,10 @@ function QueueConstructor() {
     const privateQueue = [];
     let isLoopUnlocked = true;
     async function tickQueue() {
+        const scanner = await scannerReference;
         isLoopUnlocked = false;
         while (privateQueue.length) {
-            await /* replace with: PrimeHunter(task), placeholder:*/Promise.resolve();
+            await scanner.scanTask(privateQueue[0]);
             privateQueue.shift();
         }
         isLoopUnlocked = true;
