@@ -1,16 +1,23 @@
-/**@typedef {Object} ControlledPromise
+/**@module ControlledPromise 
+ * @exports controlledPromiseConstructor
+*/
+
+/**@typedef {Object} controlledPromise
  * @property {function} resolve
  * @property {function} reject
  * @prop {Promise} promise
 */
+
 /**
  * @constructor
- * @constructs ControlledPromise
+ * @constructs controlledPromise
+ * @function controlledPromiseConstructor
+ * @returns {controlledPromise}
  */
-function controlledPromise () {
+function controlledPromiseConstructor () {
     this.promise = new Promise((resolve,reject)=>{
         this.resolve= resolve;
         this.reject=reject;
     });
 }
-module.exports = controlledPromise;
+module.exports = controlledPromiseConstructor;

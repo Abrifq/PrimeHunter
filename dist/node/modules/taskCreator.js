@@ -1,5 +1,7 @@
 const queueReference = require("./queueHandler");
-
+/**@module TaskShortcuts
+ * @requires {@link module:QueueHandler}
+ */
 /**
  * @returns {Promise.<boolean>}
  * @param {number} target - The target number

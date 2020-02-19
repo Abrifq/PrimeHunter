@@ -1,6 +1,23 @@
+/**@module PrimeNumberScanner
+ * @requires module:ControlledPromise
+ * @requires module:AsyncArrayUtils
+ */
 const controlledPromiseConstructor = require("./controlledPromise");
+const { every: asyncEvery } = require("./asyncArrayUtils");
+/**@typedef {Object} taskTemplate
+ * @prop {string} directive
+ * @prop {number} amount - also known as target.
+ */
+/**@typedef {Object} Task
+ * @extends {taskTemplate}
+ * @prop {Object} controlledPromise
+ * @prop {function} controlledPromise.resolve
+ * @prop {function} controlledPromise.reject
+ * @prop {Promise} controlledPromise.promise
+ */
 /**@generator
  * @returns {Generator}
+ * @yields {Promise<Boolean|number|number[]>}
  */
 
 const PrimeScannerGenerator = async function* () {
@@ -102,8 +119,17 @@ const PrimeScannerGenerator = async function* () {
     }
 };
 
+/**
+ * @typedef {Object} PrimeHunter
+ * @prop {Object} outputs
+ * @prop {number[]} outputs.primes
+ * @prop {number} outputs.scannedTo
+ * @prop {function} scanTask
+ */
 
 const PrimeHunter = {
+ /**@type {PrimeHunter} */
+const PrimeHunterController = {
     outputs: {
         primes: [],
         scannedTo: 0
@@ -113,3 +139,11 @@ const generator = PrimeScannerGenerator.apply(PrimeHunter);
 PrimeHunter.scanTask = task => generator.next(task);
 exports.default = null;
 exports = module.exports = PrimeHunter.scanTask().then(() => PrimeHunter); //first scan
+/**@alias PrimeHunter.scanTask
+ * @kind function
+ * @async
+ * @param {Task} task
+ * @returns {Promise<number[]|number|boolean>}
+ */
+
+/**@type {Promise<PrimeHunter>} */

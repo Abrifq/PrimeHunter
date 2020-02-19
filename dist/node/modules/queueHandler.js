@@ -1,4 +1,11 @@
 
+/**@module QueueHandler
+ * @requires {@link module:PrimeNumberScanner}
+ */
+/**@typedef {Object} taskTemplate
+ * @prop {string} directive
+ * @prop {number} amount - also known as target.
+ */
 /**@constructor
  */
 function QueueConstructor() {
@@ -38,9 +45,5 @@ function QueueConstructor() {
         };
 }
 
-/**@typedef PrimeHunter-Task
- * @property {string} taskDescriptor
- * @property {number} amount
- * @prop {ControlledPromise} control
- */
+
 module.exports = new QueueConstructor();

@@ -1,27 +1,49 @@
-    /**@callback asyncArrayLoopedBoolChecker
-     * @param {*} item
-     * @param {number} index
-     * @param {Array} array
-     * @returns {Promise<boolean>}
-     */
-    /**@callback asyncArrayReducer
-     * @param {*} initialValue
-     * @param {*} item
-     * @param {number} index
-     * @param {Array} array
-     * @returns {Promise<*>}
-     */
-    /**@callback asyncArrayVoidLoop
-     * @param {*} item
-     * @param {number} index
-     * @param {Array} array
-     * @returns {Promise<void>}
-     */
+/**
+   * @module AsyncArrayUtils
+   * @description A mock creation of some of the Array.prototype functions in async.
+   * @type {Object}
+   * @exports asyncArrayUtils
+   * @property {function} some - Returns `true` if any of the promises resolve to `true`.\nWill resolve to `false` instantly if the array is empty.
+   * @property {function} every - Returns `false` if any of the promises resolve to `false`.\nWill resolve to `true` instantly if the array is empty.
+   * @property {function} reduce 
+   * @property {function} reduceRight
+   * @property {function} forEach
+   */
+/**@callback asyncArrayBoolCheckerForLoops
+* @param {*} item
+* @param {number=} index
+* @param {Array=} array
+* @async
+* @returns {Promise<boolean>}
+*/
+/**@callback asyncArrayReducer
+ * @param {*} initialValue
+ * @param {*} item
+ * @param {number=} index
+ * @param {Array=} array
+ * @async
+ * @returns {Promise<*>}
+ */
+/**@callback asyncArrayVoidLoop
+ * @param {*} item
+ * @param {number=} index
+ * @param {Array=} array
+ * @async
+ * @returns {Promise<void>}
+ */
+/**@callback asyncArrayMapCallback
+ * @param {*} value
+ * @param {number=} index
+ * @param {Array=} array
+ * @async
+ * @returns {Promise}
+ */
+
 module.exports = {
-    /**
+    /**@async
      * @returns {Promise<boolean>}
      * @param {Array|Set} array 
-     * @param {asyncArrayLoopedBoolChecker} asyncFunction - Passed arguments are same as in the Array.prototype.some
+     * @param {asyncArrayBoolCheckerForLoops} asyncFunction - Passed arguments are same as in the Array.prototype.some
      */
     some: async function asyncSome(array, asyncFunction) {
         if (array instanceof Set) {
@@ -36,10 +58,10 @@ module.exports = {
         }
         return doesSomeResolveToTrue;
     },
-    /**
+    /**@async
      * @returns {Promise<boolean>}
      * @param {Array|Set} array 
-     * @param {asyncArrayLoopedBoolChecker} asyncFunction - Passed arguments are same as in the Array.prototype.every
+     * @param {asyncArrayBoolCheckerForLoops} asyncFunction - Passed arguments are same as in the Array.prototype.every
      */
     every: async function asyncEvery(array, asyncFunction) {
         if (array instanceof Set) {
@@ -54,7 +76,7 @@ module.exports = {
         }
         return !didAnyFail;
     },
-    /**
+    /**@async,
      * @returns {Promise<void>}
      * @param {Array|Set} array 
      * @param {VoidFunction} asyncFunction - Passed arguments are same as in Array.prototype.forEach
@@ -69,8 +91,8 @@ module.exports = {
         }
         return;
     },
-    /**
-     * @returns {*}
+    /**@async
+     * @returns {Promise}
      * @param {Array|Set} array 
      * @param {asyncArrayReducer} asyncFunction 
      * @param {*=} initialValue 
@@ -79,11 +101,6 @@ module.exports = {
         if (array instanceof Set) {
             array = [...array];
         }
-        for (let i = 0; i < array.length; i++) {
-            if (typeof initialValue === "undefined") {
-                initialValue = array[i];
-                continue;
-            }
         let i = 0;
         if (typeof initialValue === "undefined") {
             initialValue = array[i];
@@ -95,8 +112,8 @@ module.exports = {
         }
         return initialValue;
     },
-    /**
-     * @returns {*}
+    /**@async
+     * @returns {Promise}
      * @param {Array|Set} array 
      * @param {asyncArrayReducer} asyncFunction 
      * @param {*=} initialValue 
@@ -105,11 +122,6 @@ module.exports = {
         if (array instanceof Set) {
             array = [...array];
         }
-        for (let i = array.length - 1; i !== -1; i--) {
-            if (typeof initialValue === "undefined") {
-                initialValue = array[i];
-                continue;
-            }
         let i = array.length - 1;
         if (typeof initialValue === "undefined") {
             initialValue = array[i];
@@ -120,18 +132,29 @@ module.exports = {
 
             initialValue = await asyncFunction(initialValue, array[i], i, array);
         }
+    },
+    /**
+     * @returns {asyncMapChained}
+     * @param {Array} array 
+     */
     mapConstructor: function asyncArrayMapConstructor(array){
         /**
          * @typedef {Object} asyncMapChained
          * @property {Array} array - The result after the last `map()`
-         * @property {function asyncArrayMap(asyncFunction)=>Promise<asyncMapChained>} map
+         * @property {function} map
          */
         const self = {
             array,
+            /**
+             * @param {asyncArrayMapCallback} asyncFunction
+             * @async
+             * @returns {asyncMapChained}
+             */
             map: async function(asyncFunction){
                 for ( let i = 0;i<array.length;i++ ){
-                    await asyncFunction(array[i],i,array);
+                 array[i] =   await asyncFunction(array[i],i,array);
                 }
+                return self;
             }
         };
         return self;
