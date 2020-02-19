@@ -23,6 +23,6 @@
   "homepage": "https://github.com/fbarda/PrimeHunter#readme",
   "devDependencies": {
     "jsdoc": "^3.6.3",
-    "jsdoc-to-markdown": "^5.0.3"
+    "minami": "^1.2.3"
   }
 }
