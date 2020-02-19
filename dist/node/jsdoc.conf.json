@@ -1,0 +1,37 @@
+{
+    
+    "opts": {
+        "destination": "./docs/jsdoc",
+        "encoding": "utf8"
+    },
+    
+    "plugins": [],
+    
+    "recurseDepth": 10,
+    
+    "source": {
+      
+        "excludePattern": "",
+       
+        "includePattern": ".+\\.js(doc|x)?$",
+      
+        "type": "module"
+    },
+    
+    "tags": {
+        
+        "allowUnknownTags": true,
+        
+        "dictionaries": [
+            "jsdoc",
+            "closure"
+        ]
+    },
+    
+    "templates": {
+       
+        "cleverLinks": true,
+       
+        "monospaceLinks": true
+    }
+}

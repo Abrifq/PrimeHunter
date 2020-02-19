@@ -4,7 +4,8 @@
   "description": "A tool to scan for prime numbers asynchronously. Output can be exported to third party with ease.",
   "main": "main.js",
   "scripts": {
-    "test": "node main.js --debug"
+    "test": "node main.js --debug",
+    "update-doc": "jsdoc -c ./jsdoc.conf.json ./main.js ./modules/"
   },
   "repository": {
     "type": "git",
@@ -19,5 +20,9 @@
   "bugs": {
     "url": "https://github.com/fbarda/PrimeHunter/issues"
   },
-  "homepage": "https://github.com/fbarda/PrimeHunter#readme"
+  "homepage": "https://github.com/fbarda/PrimeHunter#readme",
+  "devDependencies": {
+    "jsdoc": "^3.6.3",
+    "jsdoc-to-markdown": "^5.0.3"
+  }
 }
