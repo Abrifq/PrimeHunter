@@ -2,6 +2,10 @@ const queueReference = require("./queueHandler");
 /**@module TaskShortcuts
  * @requires {@link module:QueueHandler}
  */
+/**@typedef {BackupObject}
+ * @prop {number} scannedTo
+ * @prop {number[]} primeList
+ */
 /**
  * @returns {Promise.<boolean>}
  * @param {number} target - The target number
@@ -42,7 +46,18 @@ function scanNumbers(amount) {
         directive: "scanNumbers", amount
     });
 }
+/**
+ * @returns {Promise<boolean>}
+ * @param {BackupObject} backup 
+ */
+function importBackup (backup){
+    if (typeof backup === "string"){ backup = JSON.parse(backup);}
+    queueReference.addTask({
+        directive:"backup",
+        ...backup
+    });
+}
 
 module.exports = exports = {
-    scanToTargetNumber, scanNumbers, findPrimes, findPrime
+    scanToTargetNumber, scanNumbers, findPrimes, findPrime,importBackup
 };

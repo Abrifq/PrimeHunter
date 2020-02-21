@@ -2,7 +2,6 @@
  * @requires module:TaskShortcuts
  * @requires module:AsyncArrayUtils
  * @requires module:PrimeNumberScanner
- * @requires module:QueueHandler
  */
 /**
  * @typedef {Object} TaskTemplate
@@ -12,13 +11,13 @@
 
 let lolGlobal;
 async function PrimeHunter() {
-    const { findPrime, scanToTargetNumber, findPrimes, scanNumbers } = require("./modules/taskCreator"),
+    const tasksReference= require("./modules/taskCreator"),
         {mapConstructor} = require("./modules/asyncArrayUtils"),
-        { addTask: rawTaskSender } = require("./modules/queueHandler"),
         {outputs} = await require("./modules/scanner");
 
     if (typeof lolGlobal === "undefined") {
         const newSingleton = {
+            ...tasksReference,
             results:outputs,
             /**@param {Array<TaskTemplate|TaskTemplate[]>} queue */
             async bulkSearch(...queue) {
@@ -30,15 +29,15 @@ async function PrimeHunter() {
                 async function taskSelector(directive, value) {
                     switch (directive) {
                         case "scanToNumber":
-                            return scanToTargetNumber(value);
+                            return tasksReference.scanToTargetNumber(value);
                         case "scanNumbers":
-                            return scanNumbers(value);
+                            return tasksReference.scanNumbers(value);
                         case "findPrime":
-                            return findPrime(value);
+                            return tasksReference.findPrime(value);
                         case "findPrimes":
-                            return findPrimes(value);
+                            return tasksReference.findPrimes(value);
                         case "backup":
-                            return rawTaskSender({ directive, value });
+                            return tasksReference.importBackup(value);
                         default: 
                         return "Wrong directive.";
                     }
@@ -47,6 +46,15 @@ async function PrimeHunter() {
                 .map(({directive,amount:value})=>taskSelector(directive,value))
                 .then(chain=>chain.array)
                 .then(Promise.all);
+            },
+            getBackup(){
+                const resultsReference = this.results;
+                return JSON.stringify(
+                    {
+                        scannedTo:resultsReference.scannedTo,
+                        primeList: Array.from (resultsReference.primes)
+                    }
+                );
             }
         };
         lolGlobal = newSingleton;
