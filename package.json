@@ -1,0 +1,27 @@
+{
+  "name": "primehunter",
+  "version": "0.2.0",
+  "description": "Prime number finder. Lazy and async.",
+  "main": "./node/core/index.js",
+  "scripts": {
+    "test": "node ./node/test/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fbarda/PrimeHunter.git"
+  },
+  "keywords": [
+    "prime",
+    "lazy",
+    "async",
+    "prime",
+    "number",
+    "generator"
+  ],
+  "author": "Arda Aydın",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/fbarda/PrimeHunter/issues"
+  },
+  "homepage": "https://github.com/fbarda/PrimeHunter#readme"
+}
